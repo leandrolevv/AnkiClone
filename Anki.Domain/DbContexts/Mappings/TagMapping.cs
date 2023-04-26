@@ -8,10 +8,11 @@ namespace Anki.Domain.DbContexts.Mappings
     {
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
-            builder.ToTable("Card");
+            builder.ToTable("Tag");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd().UseIdentityColumn();
             builder.Property(x => x.Text).HasColumnType("VARCHAR").HasMaxLength(1000).IsRequired();
+            builder.HasIndex(x => x.Text, "IDX_TAG").IsUnique();
         }
     }
     

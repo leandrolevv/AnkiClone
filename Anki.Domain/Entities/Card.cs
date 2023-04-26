@@ -6,6 +6,6 @@ namespace Anki.Domain.Entities
     {
         public string Front { get; set; }
         public string Back { get; set; }
-        public IList<Tag> Tags { get; set; } = new List<Tag>();
+        public IEnumerable<Tag> Tags { get; set; }
     }
 }
