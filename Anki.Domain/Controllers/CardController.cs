@@ -1,5 +1,7 @@
 ﻿using Anki.Domain.DbContexts;
 using Anki.Domain.Entities;
+using Anki.Domain.Extensions;
+//using Anki.Domain.Extensions;
 using Anki.Domain.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +16,7 @@ namespace Anki.Domain.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Erro na validação dos dados");
+                return BadRequest(new ResultViewModel<IList<string>>(ModelState.GetErrors()));
             }
 
             var cards = await context.Cards.Include(x => x.Tags).AsNoTracking().ToListAsync();
@@ -34,7 +36,7 @@ namespace Anki.Domain.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Erro na validação dos dados");
+               // return BadRequest(new ResultViewModel<IList<string>>(ModelState.GetErrors()));
             }
             var card = new Card()
              {

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Anki.Domain.Migrations
 {
     [DbContext(typeof(AnkiDbContext))]
-    [Migration("20230426034710_AlteradoIndexTag")]
-    partial class AlteradoIndexTag
+    [Migration("20230427030503_CreateDB")]
+    partial class CreateDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,6 +37,12 @@ namespace Anki.Domain.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("VARCHAR");
 
+                    b.Property<int>("DeckId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DeckId1")
+                        .HasColumnType("int");
+
                     b.Property<string>("Front")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -44,7 +50,32 @@ namespace Anki.Domain.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DeckId");
+
+                    b.HasIndex("DeckId1");
+
                     b.ToTable("Card", (string)null);
+                });
+
+            modelBuilder.Entity("Anki.Domain.Entities.Deck", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex(new[] { "Title" }, "IDX_Title_Deck")
+                        .IsUnique();
+
+                    b.ToTable("Deck", (string)null);
                 });
 
             modelBuilder.Entity("Anki.Domain.Entities.Tag", b =>
@@ -57,11 +88,15 @@ namespace Anki.Domain.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("VARCHAR");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag");
+                    b.HasIndex(new[] { "Text" }, "IX_Tag_Text")
+                        .IsUnique();
+
+                    b.ToTable("Tag", (string)null);
                 });
 
             modelBuilder.Entity("CardTag", b =>
@@ -79,6 +114,24 @@ namespace Anki.Domain.Migrations
                     b.ToTable("CardTag");
                 });
 
+            modelBuilder.Entity("Anki.Domain.Entities.Card", b =>
+                {
+                    b.HasOne("Anki.Domain.Entities.Deck", null)
+                        .WithMany("Cards")
+                        .HasForeignKey("DeckId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired()
+                        .HasConstraintName("FK_Deck_Card");
+
+                    b.HasOne("Anki.Domain.Entities.Deck", "Deck")
+                        .WithMany()
+                        .HasForeignKey("DeckId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Deck");
+                });
+
             modelBuilder.Entity("CardTag", b =>
                 {
                     b.HasOne("Anki.Domain.Entities.Tag", null)
@@ -94,6 +147,11 @@ namespace Anki.Domain.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_CARDTAG_TAGID");
+                });
+
+            modelBuilder.Entity("Anki.Domain.Entities.Deck", b =>
+                {
+                    b.Navigation("Cards");
                 });
 #pragma warning restore 612, 618
         }

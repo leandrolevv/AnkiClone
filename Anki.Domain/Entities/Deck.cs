@@ -2,9 +2,9 @@
 
 namespace Anki.Domain.Entities
 {
-    public class Tag : Entity
+    public class Deck : Entity
     {
-        public string Text { get; set; }
+        public string Title { get; set; }
         public IList<Card> Cards { get; set; }
     }
 }

@@ -7,6 +7,7 @@ namespace Anki.Domain.DbContexts
     public class AnkiDbContext : DbContext
     {
         public DbSet<Card> Cards { get; set; }
+        public DbSet<Deck> Decks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -15,7 +16,9 @@ namespace Anki.Domain.DbContexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new TagMapping());
             modelBuilder.ApplyConfiguration(new CardMapping());
+            modelBuilder.ApplyConfiguration(new DeckMapping());
         }
     }
 }
