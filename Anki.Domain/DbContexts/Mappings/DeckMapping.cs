@@ -12,7 +12,6 @@ namespace Anki.Domain.DbContexts.Mappings
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Title).HasMaxLength(100).IsRequired().HasColumnType("VARCHAR");
             builder.HasIndex(x => x.Title, "IDX_Title_Deck").IsUnique();
-            builder.HasMany(x => x.Cards).WithOne().IsRequired().HasConstraintName("FK_Deck_Card").OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

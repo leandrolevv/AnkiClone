@@ -1,54 +1,60 @@
-﻿using Anki.Domain.DbContexts;
+﻿using Anki.Domain.ActionFilter;
+using Anki.Domain.DbContexts;
 using Anki.Domain.Entities;
 using Anki.Domain.Extensions;
 //using Anki.Domain.Extensions;
 using Anki.Domain.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace Anki.Domain.Controllers
 {
     [ApiController]
-    public class CardController: ControllerBase
+    [Route("v1/Card")]
+    public class CardController : ControllerBase
     {
-        [HttpGet("/v1/Card")]
-        public async Task<IActionResult> GetAsync([FromServices] AnkiDbContext context)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new ResultViewModel<IList<string>>(ModelState.GetErrors()));
-            }
+        [HttpGet]
+        public async Task<IActionResult> GetAsync([FromServices] AnkiDbContext context) => Ok(new ResultViewModel<List<Card>>(await context.Cards.Include(x => x.Tags).AsNoTracking()
+                .ToListAsync()));
 
-            var cards = await context.Cards.Include(x => x.Tags).AsNoTracking().ToListAsync();
-
-            if (cards.Count == 0)
-            {
-                return NotFound(new ResultViewModel<string>("Não foi possível encontrar nenhum card"));
-            }
-
-            return Ok(new ResultViewModel<List<Card>>(cards));
-        }
-
-        [HttpPost("/v1/Card")]
+        [HttpPost]
+        [ValidateModelFilter]
         public async Task<IActionResult> PostAsync([FromServices] AnkiDbContext context, [FromBody] CardEditorViewModel model)
         {
             var tags = new List<Tag>(model.Tags.Select(x => new Tag() { Text = x }));
+            var deck = await context.Decks.FirstOrDefaultAsync(x => x.Title == model.DeckTitle);
 
-            if (!ModelState.IsValid)
+            if (deck == null)
             {
-               // return BadRequest(new ResultViewModel<IList<string>>(ModelState.GetErrors()));
+                return NotFound(new ResultViewModel<string>("Deck não encontrado"));
             }
+
             var card = new Card()
-             {
-                 Front = model.Front,
-                 Back = model.Back,
-                 Tags = tags
+            {
+                Front = model.Front,
+                Back = model.Back,
+                Tags = tags,
+                Deck = deck
             };
- 
-             await context.Cards.AddAsync(card);
-             await context.SaveChangesAsync();
-            
-             return Ok(card);
+
+            await context.Cards.AddAsync(card);
+            await context.SaveChangesAsync();
+
+            return Ok(new ResultViewModel<Card>(card));
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync([FromServices] AnkiDbContext context, [FromRoute] int id)
+        {
+            var card = context.Cards.FirstOrDefault(x => x.Id == id);
+
+            if (card == null)
+                return NotFound(new ResultViewModel<string>("Não foi encontrado o conteúdo"));
+
+            context.Cards.Remove(card);
+            await context.SaveChangesAsync();
+            return Ok(new ResultViewModel<string>(data: "Excluído com sucesso"));
         }
     }
 }

@@ -5,7 +5,7 @@
 namespace Anki.Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDB : Migration
+    public partial class CreateNew : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,21 +44,21 @@ namespace Anki.Domain.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Front = table.Column<string>(type: "VARCHAR(1000)", maxLength: 1000, nullable: false),
                     Back = table.Column<string>(type: "VARCHAR(1000)", maxLength: 1000, nullable: false),
-                    DeckId1 = table.Column<int>(type: "int", nullable: false),
-                    DeckId = table.Column<int>(type: "int", nullable: false)
+                    DeckId = table.Column<int>(type: "int", nullable: false),
+                    DeckId1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Card", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Card_Deck_DeckId1",
-                        column: x => x.DeckId1,
+                        name: "FK_Card_Deck",
+                        column: x => x.DeckId,
                         principalTable: "Deck",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Deck_Card",
-                        column: x => x.DeckId,
+                        name: "FK_Card_Deck_DeckId1",
+                        column: x => x.DeckId1,
                         principalTable: "Deck",
                         principalColumn: "Id");
                 });

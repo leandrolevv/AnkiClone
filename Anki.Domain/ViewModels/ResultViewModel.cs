@@ -20,6 +20,11 @@ namespace Anki.Domain.ViewModels
             Errors.Add(message);
         }
 
+        public ResultViewModel(IList<string> errors)
+        {
+            Errors = errors;
+        }
+
         public ResultViewModel(T data)
         {
             Data = data;

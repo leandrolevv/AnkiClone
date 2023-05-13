@@ -15,7 +15,6 @@ namespace Anki.Domain.ViewModels
         public string Back { get; set; }
         [Required(ErrorMessage = "A carta deve estar vinculada a algum baralho")]
         public string DeckTitle { get; set; }
-        
         public IList<string> Tags { get; set; } = new List<string>();
     }
 }

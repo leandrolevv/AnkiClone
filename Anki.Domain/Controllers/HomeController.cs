@@ -14,7 +14,7 @@ namespace Anki.Domain.Controllers
         [HttpGet("/v1")]
         public IActionResult GetV1()
         {
-            return Ok("/v1 ativa.");
+            return Ok("Versão 1 ativa");
         }
     }
 }

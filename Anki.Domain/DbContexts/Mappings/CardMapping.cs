@@ -13,7 +13,7 @@ namespace Anki.Domain.DbContexts.Mappings
             builder.Property(x => x.Id).ValueGeneratedOnAdd().UseIdentityColumn();
             builder.Property(x => x.Front).HasColumnType("VARCHAR").HasMaxLength(1000).IsRequired();
             builder.Property(x => x.Back).HasColumnType("VARCHAR").HasMaxLength(1000).IsRequired();
-            //builder.HasMany(x => x.Tags).WithOne().HasConstraintName("FK_CARD_TAGID").HasConstraintName("TAG_ID");
+            builder.HasOne(x => x.Deck).WithMany().IsRequired().HasConstraintName("FK_Card_Deck");
             builder
                 .HasMany(x => x.Tags)
                 .WithMany(x => x.Cards)
