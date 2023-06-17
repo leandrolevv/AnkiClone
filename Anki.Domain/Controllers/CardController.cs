@@ -22,7 +22,6 @@ namespace Anki.Domain.Controllers
         [ValidateModelFilter]
         public async Task<IActionResult> PostAsync([FromServices] AnkiDbContext context, [FromBody] CardEditorViewModel model)
         {
-            var tags = new List<Tag>(model.Tags.Select(x => new Tag() { Text = x }));
             var deck = await context.Decks.FirstOrDefaultAsync(x => x.Title == model.DeckTitle);
 
             if (deck == null)
@@ -34,9 +33,11 @@ namespace Anki.Domain.Controllers
             {
                 Front = model.Front,
                 Back = model.Back,
-                Tags = tags,
                 Deck = deck
             };
+
+            var tags = await context.Tags.Where(x => model.Tags.Contains(x.Text)).ToListAsync();
+            card.AddTags(tags, model.Tags);
 
             await context.Cards.AddAsync(card);
             await context.SaveChangesAsync();

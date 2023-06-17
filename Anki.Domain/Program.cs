@@ -10,9 +10,17 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 }).ConfigureApiBehaviorOptions(
     options => options.SuppressModelStateInvalidFilter = true);
 
+builder.Services.AddCors(options => options.AddDefaultPolicy(builder =>
+{
+    builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+}));
+
 builder.Services.AddDbContext<AnkiDbContext>();
 
 var app = builder.Build();
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+    app.UseCors();
 
 app.Run();

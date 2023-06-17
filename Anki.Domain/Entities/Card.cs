@@ -8,5 +8,13 @@ namespace Anki.Domain.Entities
         public string Back { get; set; }
         public Deck Deck { get; set; }
         public IList<Tag> Tags { get; set; }
+        public void AddTags(IList<Tag> tags, IList<string> newTagTextList)
+        {
+            foreach(var tagText in newTagTextList)
+                if (tags.Where(t => t.Text == tagText).ToList().Count == 0)
+                    tags.Add(new Tag(){Text = tagText });
+
+            Tags = tags;
+        }
     }
 }
